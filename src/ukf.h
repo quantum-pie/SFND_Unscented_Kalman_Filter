@@ -4,6 +4,8 @@
 #include "Eigen/Dense"
 #include "measurement_package.h"
 
+#include <vector>
+
 class UKF {
  public:
   /**
@@ -41,9 +43,8 @@ class UKF {
    */
   void UpdateRadar(MeasurementPackage meas_package);
 
-
   // initially set to false, set to true in first call of ProcessMeasurement
-  bool is_initialized_;
+  bool is_initialized_{false};
 
   // if this is false, laser measurements will be ignored (except for init)
   bool use_laser_;
@@ -52,13 +53,13 @@ class UKF {
   bool use_radar_;
 
   // state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
-  Eigen::VectorXd x_;
+  Eigen::Matrix<double, 5, 1> x_;
 
   // state covariance matrix
-  Eigen::MatrixXd P_;
+  Eigen::Matrix<double, 5, 5> P_;
 
-  // predicted sigma points matrix
-  Eigen::MatrixXd Xsig_pred_;
+  // predicted sigma points
+  std::array<Eigen::Matrix<double, 5, 1>, 15> Xsig_pred_;
 
   // time when the state is true, in us
   long long time_us_;
@@ -82,19 +83,7 @@ class UKF {
   double std_radphi_;
 
   // Radar measurement noise standard deviation radius change in m/s
-  double std_radrd_ ;
-
-  // Weights of sigma points
-  Eigen::VectorXd weights_;
-
-  // State dimension
-  int n_x_;
-
-  // Augmented state dimension
-  int n_aug_;
-
-  // Sigma point spreading parameter
-  double lambda_;
+  double std_radrd_;
 };
 
 #endif  // UKF_H
